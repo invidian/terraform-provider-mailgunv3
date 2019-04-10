@@ -118,8 +118,7 @@ func resourceMailgunDomainCreate(d *schema.ResourceData, meta interface{}) error
 
 	log.Printf("[DEBUG] Domain create configuration: %s, %s, %s, %v", name, smtpPassword, spamAction, wildcard)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer cancel()
+	ctx := context.Background()
 
 	_, err := client.CreateDomain(ctx, name, smtpPassword, &mailgun.CreateDomainOptions{
 		SpamAction: mailgun.SpamAction(spamAction),
@@ -149,8 +148,7 @@ func resourceMailgunDomainDelete(d *schema.ResourceData, meta interface{}) error
 
 	log.Printf("[INFO] Deleting Domain: %s", d.Id())
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer cancel()
+	ctx := context.Background()
 
 	// Destroy the domain
 	err := client.DeleteDomain(ctx, d.Id())
@@ -160,8 +158,7 @@ func resourceMailgunDomainDelete(d *schema.ResourceData, meta interface{}) error
 
 	// Give the destroy a chance to take effect
 	return resource.Retry(1*time.Minute, func() *resource.RetryError {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-		defer cancel()
+		ctx := context.Background()
 
 		_, err = client.GetDomain(ctx, d.Id())
 		if err == nil {
@@ -187,8 +184,7 @@ func resourceMailgunDomainRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceMailgunDomainRetrieve(id string, client *mailgun.MailgunImpl, d *schema.ResourceData) (*mailgun.Domain, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer cancel()
+	ctx := context.Background()
 
 	domain, err := (*client).GetDomain(ctx, id)
 
